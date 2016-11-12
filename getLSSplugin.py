@@ -74,6 +74,8 @@ class getLSSplugin:
         self.dockwidget = None
 
 
+
+
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
         """Get the translation for a string using Qt translation API.
@@ -208,13 +210,22 @@ class getLSSplugin:
 
     #--------------------------------------------------------------------------
 
+    def loadGrid(self):
+        """"Load vector layer"""
+        grid_layer_path = ["/data/LIDAR_FISHNET_D96.shp", "/data/LIDAR_FISHNET_D48GK.shp"]
+        index = self.dockwidget.comboBoxGridLayer.currentIndex()
+        layer = self.iface.addVectorLayer(grid_layer_path[index], "D96", "ogr")
+        if not layer:
+            print "Layer failed to load!"
+
     def run(self):
         """Run method that loads and starts the plugin"""
+        grid_layer_name = ['Lidar D96/TM', 'Lidar D48/GK']
 
         if not self.pluginIsActive:
             self.pluginIsActive = True
 
-            #print "** STARTING getLSSplugin"
+
 
             # dockwidget may not exist if:
             #    first run of plugin
@@ -222,6 +233,9 @@ class getLSSplugin:
             if self.dockwidget == None:
                 # Create the dockwidget (after translation) and keep reference
                 self.dockwidget = getLSSpluginDockWidget()
+                self.dockwidget.comboBoxGridLayer.clear()
+                self.dockwidget.comboBoxGridLayer.addItems(grid_layer_name)
+                self.dockwidget.loadLayer.clicked.connect(self.loadGrid)
 
             # connect to provide cleanup on closing of dockwidget
             self.dockwidget.closingPlugin.connect(self.onClosePlugin)
