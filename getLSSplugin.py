@@ -22,13 +22,16 @@
 """
 from PyQt4.QtCore import QSettings, QTranslator, qVersion, QCoreApplication, Qt
 from PyQt4.QtGui import QAction, QIcon
+from qgis.core import QgsMapLayerRegistry
+import qgis
 # Initialize Qt resources from file resources.py
 import resources
 
 # Import the code for the DockWidget
 from getLSSplugin_dockwidget import getLSSpluginDockWidget
 import os.path
-
+import os
+import getLSS as lss
 
 class getLSSplugin:
     """QGIS Plugin Implementation."""
@@ -72,8 +75,6 @@ class getLSSplugin:
 
         self.pluginIsActive = False
         self.dockwidget = None
-
-
 
 
     # noinspection PyMethodMayBeStatic
@@ -209,14 +210,61 @@ class getLSSplugin:
         del self.toolbar
 
     #--------------------------------------------------------------------------
+    def unloadGrid(self, layername):
+        """Unload Grid"""
+        layers = self.iface.legendInterface().layers()
+        for layer in layers:
+            if layer.name() == layername:
+                QgsMapLayerRegistry.instance().removeMapLayer(layer.id())
+
+
+    def getLayerNames(self):
+        """"Get layer names"""
+        layers = self.iface.legendInterface().layers()
+        layer_list = []
+        for layer in layers:
+            layer_list.append(layer.name())
+        return layer_list
 
     def loadGrid(self):
         """"Load vector layer"""
-        grid_layer_path = ["/data/LIDAR_FISHNET_D96.shp", "/data/LIDAR_FISHNET_D48GK.shp"]
+        layer_names = ['Tiles LIDAR D96', 'Tiles LIDAR D48']
+
+        #Check if grid already loaded
+        layerlist = []
+        layerlist = self.getLayerNames()
+        for layer in layerlist:
+            if layer == layer_names[0]:
+                self.unloadGrid(layer_names[0])
+            elif layer == layer_names[1]:
+                self.unloadGrid(layer_names[1])
+
+        #Load grid
+
+        grid_layer_path = [os.path.dirname(__file__) + "/data/LIDAR_FISHNET_D96.shp",
+                           os.path.dirname(__file__) + "/data/LIDAR_FISHNET_D48GK.shp"]
         index = self.dockwidget.comboBoxGridLayer.currentIndex()
-        layer = self.iface.addVectorLayer(grid_layer_path[index], "D96", "ogr")
+        layer = self.iface.addVectorLayer(grid_layer_path[index], layer_names[index], "ogr")
         if not layer:
             print "Layer failed to load!"
+
+    def getTileNames(self):
+        tileNames = []
+        layer = qgis.utils.iface.activeLayer()
+        selected_features = layer.selectedFeatures()
+        for feature in selected_features:
+            tile_name = feature['NAME']
+            tile_block = feature['BLOK']
+            [tileE, tileN] = tile_name.split("_")
+            [blok, number] = tile_block.split("_")
+            tileNames.append([int(tileE), int(tileN)])
+        return tileNames
+
+
+
+    def download(self):
+        tileNames = self.getTileNames()
+        lss.getLSS(tileNames, 'D96TM', 'DMR')
 
     def run(self):
         """Run method that loads and starts the plugin"""
@@ -236,6 +284,7 @@ class getLSSplugin:
                 self.dockwidget.comboBoxGridLayer.clear()
                 self.dockwidget.comboBoxGridLayer.addItems(grid_layer_name)
                 self.dockwidget.loadLayer.clicked.connect(self.loadGrid)
+                self.dockwidget.pushButtonDownload.clicked.connect(self.download)
 
             # connect to provide cleanup on closing of dockwidget
             self.dockwidget.closingPlugin.connect(self.onClosePlugin)
