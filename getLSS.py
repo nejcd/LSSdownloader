@@ -23,7 +23,7 @@
 import urllib
 
 
-def getLSS(tiles, CRS, product):
+def getLSS(tiles, CRS, product, destination):
     """Download LIDAR Slovenia
     :param tiles: Array of tiles (E, N)
     :type tiles: int
@@ -31,6 +31,8 @@ def getLSS(tiles, CRS, product):
     :type CRS: string
     :param product: Point Cloud (OTR), Classified Point Cloud (GKOT), Digital Elevation Model (DMR)
     :type product: string
+    :param destination: Folder location
+    :type destination: string
     """
     blocks = [11, 12, 13, 14, 15, 16, 21, 22, 23, 24, 25, 26, 31, 32, 33, 34, 35, 36, 37]
 
@@ -50,6 +52,7 @@ def getLSS(tiles, CRS, product):
         print 'Wrong product name'
 
 
+
     for [tileE, tileN] in tiles:
         filename = '{0}{1}_{2}_{3}.{4}'.format(CRS[-2:], fileprefix, tileE, tileN, extension)
         print 'Downloading: ' + filename
@@ -59,7 +62,7 @@ def getLSS(tiles, CRS, product):
                 break
             url = 'http://gis.arso.gov.si/lidar/{0}/b_{1}/{2}/{3}'.format(product, block, CRS, filename)
             try:
-                fileurl.retrieve(url, filename)
+                fileurl.retrieve(url, destination + '/' + filename)
                 download = True
             except:
                 next

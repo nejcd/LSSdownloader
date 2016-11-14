@@ -21,9 +21,10 @@
  ***************************************************************************/
 """
 from PyQt4.QtCore import QSettings, QTranslator, qVersion, QCoreApplication, Qt
-from PyQt4.QtGui import QAction, QIcon
+from PyQt4.QtGui import QAction, QIcon, QFileDialog
 from qgis.core import QgsMapLayerRegistry
 import qgis
+
 # Initialize Qt resources from file resources.py
 import resources
 
@@ -75,6 +76,10 @@ class getLSSplugin:
 
         self.pluginIsActive = False
         self.dockwidget = None
+
+        #Constants
+        self.crs = ['D96TM', 'D48GK']
+        self.product =['OTR', 'GKOT', 'DMR']
 
 
     # noinspection PyMethodMayBeStatic
@@ -264,7 +269,21 @@ class getLSSplugin:
 
     def download(self):
         tileNames = self.getTileNames()
-        lss.getLSS(tileNames, 'D96TM', 'DMR')
+        indexCRS = self.dockwidget.comboBoxGridLayer.currentIndex()
+        indexProduct = self.dockwidget.comboBoxProduct.currentIndex()
+
+        if self.dockwidget.lineOutput.text():
+            destination = self.dockwidget.lineOutput.text()
+        else:
+            self.select_output_folder()
+            destination = self.dockwidget.lineOutput.text()
+
+        lss.getLSS(tileNames, self.crs[indexCRS], self.product[indexProduct], destination)
+
+    def select_output_folder(self):
+        """Select output folder"""
+        folder = QFileDialog.getExistingDirectory(self.dockwidget, "Select folder")
+        self.dockwidget.lineOutput.setText(folder)
 
     def run(self):
         """Run method that loads and starts the plugin"""
@@ -282,8 +301,13 @@ class getLSSplugin:
                 # Create the dockwidget (after translation) and keep reference
                 self.dockwidget = getLSSpluginDockWidget()
                 self.dockwidget.comboBoxGridLayer.clear()
+
+
                 self.dockwidget.comboBoxGridLayer.addItems(grid_layer_name)
+                self.dockwidget.comboBoxProduct.addItems(self.product)
                 self.dockwidget.loadLayer.clicked.connect(self.loadGrid)
+
+                self.dockwidget.pushButtonOutput.clicked.connect(self.select_output_folder)
                 self.dockwidget.pushButtonDownload.clicked.connect(self.download)
 
             # connect to provide cleanup on closing of dockwidget
