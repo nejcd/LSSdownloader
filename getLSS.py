@@ -53,24 +53,24 @@ def getLSS(tiles, CRS, product, destination):
 
 
 
-    for [tileE, tileN] in tiles:
-        filename = '{0}{1}_{2}_{3}.{4}'.format(CRS[-2:], fileprefix, tileE, tileN, extension)
-        print 'Downloading: ' + filename
-        download = False
-        for block in blocks:
-            if download:
-                break
-            url = 'http://gis.arso.gov.si/lidar/{0}/b_{1}/{2}/{3}'.format(product, block, CRS, filename)
-            try:
-                fileurl.retrieve(url, destination + '/' + filename)
-                download = True
-            except:
-                next
-
+    [tileE, tileN] = tiles
+    filename = '{0}{1}_{2}_{3}.{4}'.format(CRS[-2:], fileprefix, tileE, tileN, extension)
+    print 'Downloading: ' + filename
+    download = False
+    for block in blocks:
         if download:
-            print 'Done downloading: ' + filename
-        else:
-            print 'Download failed'
+            break
+        url = 'http://gis.arso.gov.si/lidar/{0}/b_{1}/{2}/{3}'.format(product, block, CRS, filename)
+        try:
+            fileurl.retrieve(url, destination + '/' + filename)
+            download = True
+        except:
+            next
+
+    if download:
+        print 'Done downloading: ' + filename
+    else:
+        print 'Download failed'
 
     return
 

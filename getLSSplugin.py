@@ -279,7 +279,13 @@ class getLSSplugin:
             self.select_output_folder()
             destination = self.dockwidget.lineOutput.text()
 
-        lss.getLSS(tileNames, self.crs[indexCRS], self.product[indexProduct], destination)
+        n = 0
+        nmax = len(tileNames)
+
+        for tile in tileNames:
+            lss.getLSS(tile, self.crs[indexCRS], self.product[indexProduct], destination)
+            n += 1
+
 
     def select_output_folder(self):
         """Select output folder"""
