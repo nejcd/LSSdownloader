@@ -25,6 +25,7 @@ from PyQt4.QtGui import QAction, QIcon, QFileDialog
 from qgis.core import QgsMapLayerRegistry
 import qgis
 
+
 # Initialize Qt resources from file resources.py
 import resources
 

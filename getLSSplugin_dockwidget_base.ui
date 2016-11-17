@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>307</width>
-    <height>351</height>
+    <width>484</width>
+    <height>413</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,6 +15,13 @@
   </property>
   <widget class="QWidget" name="dockWidgetContents">
    <layout class="QGridLayout" name="gridLayout">
+    <item row="3" column="0" colspan="3">
+     <widget class="QLabel" name="label">
+      <property name="text">
+       <string>Select Tiles on Map</string>
+      </property>
+     </widget>
+    </item>
     <item row="5" column="1">
      <widget class="QLineEdit" name="lineOutput"/>
     </item>
@@ -41,7 +48,17 @@
     <item row="4" column="1" colspan="2">
      <widget class="QComboBox" name="comboBoxProduct"/>
     </item>
-    <item row="7" column="0">
+    <item row="0" column="1" colspan="2">
+     <widget class="QComboBox" name="comboBoxGridLayer"/>
+    </item>
+    <item row="6" column="0" colspan="3">
+     <widget class="QPushButton" name="pushButtonDownload">
+      <property name="text">
+       <string>Download</string>
+      </property>
+     </widget>
+    </item>
+    <item row="9" column="1">
      <spacer name="verticalSpacer">
       <property name="orientation">
        <enum>Qt::Vertical</enum>
@@ -53,16 +70,6 @@
        </size>
       </property>
      </spacer>
-    </item>
-    <item row="0" column="1" colspan="2">
-     <widget class="QComboBox" name="comboBoxGridLayer"/>
-    </item>
-    <item row="6" column="0" colspan="3">
-     <widget class="QPushButton" name="pushButtonDownload">
-      <property name="text">
-       <string>Download</string>
-      </property>
-     </widget>
     </item>
     <item row="0" column="0">
      <widget class="QLabel" name="label_3">
@@ -92,12 +99,15 @@
       </property>
      </widget>
     </item>
-    <item row="3" column="0" colspan="3">
-     <widget class="QLabel" name="label">
-      <property name="text">
-       <string>Select Tiles on Map</string>
+    <item row="8" column="0" colspan="3">
+     <widget class="QProgressBar" name="progressBar">
+      <property name="value">
+       <number>24</number>
       </property>
      </widget>
+    </item>
+    <item row="7" column="0" colspan="3">
+     <widget class="QTextBrowser" name="textBrowser"/>
     </item>
    </layout>
   </widget>
