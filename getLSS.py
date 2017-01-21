@@ -21,7 +21,7 @@
 """
 
 import urllib
-
+import time
 
 def getLSS(tiles, CRS, product, destination):
     """Download LIDAR Slovenia
@@ -59,6 +59,7 @@ def getLSS(tiles, CRS, product, destination):
     download = False
     for block in blocks:
         if download:
+            time.sleep(1)
             break
         url = 'http://gis.arso.gov.si/lidar/{0}/b_{1}/{2}/{3}'.format(product, block, CRS, filename)
         try:
